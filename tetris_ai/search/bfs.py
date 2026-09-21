@@ -24,8 +24,9 @@ def get_reachable_locks_numba(grid, piece_id, start_x, start_y, start_rot):
     head = 0
     tail = 0
 
-    visited = np.zeros((10, 26, 4), dtype=np.bool_)
-    locked_visited = np.zeros((10, 26, 4), dtype=np.bool_)
+    XOFF = 2                                          # origin x in [-2, 9]
+    visited = np.zeros((13, 26, 4), dtype=np.bool_)
+    locked_visited = np.zeros((13, 26, 4), dtype=np.bool_)
 
     valid_locks = np.zeros((2000, 3), dtype=np.int32)
     lock_count = 0
@@ -38,7 +39,7 @@ def get_reachable_locks_numba(grid, piece_id, start_x, start_y, start_rot):
     queue[tail, 1] = start_y
     queue[tail, 2] = start_rot
     tail += 1
-    visited[start_x, start_y + Y_OFFSET, start_rot] = True
+    visited[start_x + XOFF, start_y + Y_OFFSET, start_rot] = True
 
     while head < tail:
         cx = queue[head, 0]
@@ -49,8 +50,8 @@ def get_reachable_locks_numba(grid, piece_id, start_x, start_y, start_rot):
 
         ny = cy + 1
         if not fast_check_collision_numba(grid, offsets, cx, ny):
-            if not visited[cx, ny + Y_OFFSET, crot]:
-                visited[cx, ny + Y_OFFSET, crot] = True
+            if not visited[cx + XOFF, ny + Y_OFFSET, crot]:
+                visited[cx + XOFF, ny + Y_OFFSET, crot] = True
                 queue[tail, 0] = cx
                 queue[tail, 1] = ny
                 queue[tail, 2] = crot
@@ -61,26 +62,26 @@ def get_reachable_locks_numba(grid, piece_id, start_x, start_y, start_rot):
                 if cy + offsets[j, 1] < 0:
                     all_inside = False
                     break
-            if all_inside and not locked_visited[cx, cy + Y_OFFSET, crot]:
-                locked_visited[cx, cy + Y_OFFSET, crot] = True
+            if all_inside and not locked_visited[cx + XOFF, cy + Y_OFFSET, crot]:
+                locked_visited[cx + XOFF, cy + Y_OFFSET, crot] = True
                 valid_locks[lock_count, 0] = cx
                 valid_locks[lock_count, 1] = cy
                 valid_locks[lock_count, 2] = crot
                 lock_count += 1
 
         nx = cx - 1
-        if nx >= 0 and not visited[nx, cy + Y_OFFSET, crot]:
+        if nx >= -2 and not visited[nx + XOFF, cy + Y_OFFSET, crot]:
             if not fast_check_collision_numba(grid, offsets, nx, cy):
-                visited[nx, cy + Y_OFFSET, crot] = True
+                visited[nx + XOFF, cy + Y_OFFSET, crot] = True
                 queue[tail, 0] = nx
                 queue[tail, 1] = cy
                 queue[tail, 2] = crot
                 tail += 1
 
         nx = cx + 1
-        if nx < 10 and not visited[nx, cy + Y_OFFSET, crot]:
+        if nx < 10 and not visited[nx + XOFF, cy + Y_OFFSET, crot]:
             if not fast_check_collision_numba(grid, offsets, nx, cy):
-                visited[nx, cy + Y_OFFSET, crot] = True
+                visited[nx + XOFF, cy + Y_OFFSET, crot] = True
                 queue[tail, 0] = nx
                 queue[tail, 1] = cy
                 queue[tail, 2] = crot
@@ -94,10 +95,10 @@ def get_reachable_locks_numba(grid, piece_id, start_x, start_y, start_rot):
                 for k in range(5):
                     rx = cx + kicks[k, 0]
                     ry = cy + kicks[k, 1]
-                    if 0 <= rx < 10 and -2 <= ry < 22:
-                        if not visited[rx, ry + Y_OFFSET, new_rot]:
+                    if -2 <= rx < 10 and -2 <= ry < 22:
+                        if not visited[rx + XOFF, ry + Y_OFFSET, new_rot]:
                             if not fast_check_collision_numba(grid, rot_offsets, rx, ry):
-                                visited[rx, ry + Y_OFFSET, new_rot] = True
+                                visited[rx + XOFF, ry + Y_OFFSET, new_rot] = True
                                 queue[tail, 0] = rx
                                 queue[tail, 1] = ry
                                 queue[tail, 2] = new_rot

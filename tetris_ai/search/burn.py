@@ -13,7 +13,7 @@ def burn_and_clear_numba(grid, piece_id, lx, ly, lrot):
     for j in range(4):
         by = ly + offsets[j, 1]
         bx = lx + offsets[j, 0]
-        if by >= 0:
+        if by >= 0 and 0 <= bx < 10:
             new_grid[by, bx] = color_id
             landing_sum += 20 - by
     landing_height = landing_sum / 4.0
