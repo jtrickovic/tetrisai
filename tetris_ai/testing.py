@@ -75,19 +75,9 @@ def fast_check_collision(grid, shape_name, x, y, rot):
     return False
 
 
-def _fully_visible(shape_name, x, y, rot):
-    for dx, dy in SHAPE_OFFSETS[shape_name][rot]:
-        cy = y + dy
-        if cy < 0 or cy >= 20:
-            return False
-    return True
-
-
 def find_piece_path(grid, piece_id, start_x, start_y, start_rot,
                     target_lx, target_ly, target_lrot):
-    """BFS from spawn to the chosen lock, returning the ordered list of
-    (x, y, rot) positions (spawn first, target last). Mirrors the move set of
-    get_reachable_locks_numba (down / left / right / SRS rotations)."""
+
     shape_name = ID_TO_PIECE[piece_id]
     start = (start_x, start_y, start_rot)
     target = (target_lx, target_ly, target_lrot)
@@ -98,7 +88,6 @@ def find_piece_path(grid, piece_id, start_x, start_y, start_rot,
     parent = {start: None}
 
     def neighbors(cx, cy, crot):
-        """Legal successor states of (cx, cy, crot)."""
         out = []
         for dx, dy in ((0, 1), (-1, 0), (1, 0)):
             nx, ny = cx + dx, cy + dy
@@ -110,11 +99,10 @@ def find_piece_path(grid, piece_id, start_x, start_y, start_rot,
                 new_rot = (crot + d_rot) % 4
                 for dx, dy in kick_table.get((crot, new_rot), [(0, 0)]):
                     rx, ry = cx + dx, cy + dy
-                    if 0 <= rx < 10 and -2 <= ry < 22:
+                    if -2 <= rx < 10 and -2 <= ry < 22:
                         if not fast_check_collision(grid, shape_name, rx, ry, new_rot):
-                            if _fully_visible(shape_name, rx, ry, new_rot):
-                                out.append((rx, ry, new_rot))
-                                break
+                            out.append((rx, ry, new_rot))
+                            break
         return out
 
     while queue:
@@ -136,19 +124,7 @@ def find_piece_path(grid, piece_id, start_x, start_y, start_rot,
 
 
 def play_game_visual(genome):
-    """Like play_game, but yields every intermediate board state so the GUI can
-    animate the AI's reasoning. Each placement yields up to three frames:
 
-        ('move',   ...) -> the piece travels from spawn to its lock spot
-                           (a dim ghost shows the destination).
-        ('locked', ...) -> the piece is burned in, lines NOT yet cleared.
-        ('cleared',...) -> the cleared rows are removed (or 'settled' if none).
-
-    Yield format:
-        (grid, pieces, lines, phase, lines_clearing, piece_id,
-         lx, ly, lrot, moving, preview_ids, hold_id, used_hold)
-        moving = (x, y, rot) of the in-flight piece during 'move', else None.
-    """
     board = Board(10, 20)
     bag = Bag()
     next_queue = Next(bag, preview_count=max(config.LOOKAHEAD_PLY, 2))
@@ -255,17 +231,7 @@ def play_game_visual(genome):
 
 
 def watch_champion(weights=None, lock_ms=450, clear_ms=250, move_ms=45):
-    """Visualise the AI playing, animating every move.
 
-    For each piece you see it travel from spawn to its slot (a dim ghost shows
-    the destination), lock into place, then the lines clear with a
-    SINGLE/DOUBLE/TRIPLE/TETRIS banner and a running combo counter.
-
-    Controls (while running): UP/DOWN speed, SPACE pause, ESC quit.
-
-    weights : optional 12-weight genome. Defaults to the certified vfinalc
-              champion (DEFAULT_CHAMPION above).
-    """
     if weights is None:
         weights = list(DEFAULT_CHAMPION)
     genome = Genome(weights)
@@ -299,8 +265,7 @@ def watch_champion(weights=None, lock_ms=450, clear_ms=250, move_ms=45):
     state = None
 
     def advance():
-        """Pull the next frame from the generator; update combo. Returns False
-        when the game ends."""
+
         nonlocal state, combo
         try:
             s = next(game_gen)
@@ -372,7 +337,7 @@ def watch_champion(weights=None, lock_ms=450, clear_ms=250, move_ms=45):
                 pygame.draw.rect(screen, COLORS[color_id], rect)
 
         def draw_cells(x, y, rot, pid_, fill=None, outline=None, width=2):
-            """Draw (or outline) a piece at (x, y, rot) using its offset list."""
+
             offsets = ALL_SHAPE_OFFSETS[pid_][rot]
             for j in range(offsets.shape[0]):
                 cx = x + offsets[j, 0]
@@ -386,7 +351,7 @@ def watch_champion(weights=None, lock_ms=450, clear_ms=250, move_ms=45):
                         pygame.draw.rect(screen, fill, r)
 
         def draw_mini(pid_, ox, oy, size=15):
-            """Draw piece pid_ (spawn rotation) small, in the sidebar."""
+
             if pid_ is None or pid_ < 0:
                 return
             offs = ALL_SHAPE_OFFSETS[pid_][0]
