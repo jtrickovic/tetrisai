@@ -1,0 +1,54 @@
+--- Generation 1 ---
+best=3.70M  mean=2.80M (sd 1.24M)  median=3.59M (worst 108.2k)
+  weights=[25.70, -1.31, -9.25, 2.62, -23.45, -45.17, 47.15, -5.96, -24.92, -2.29, -8.35, -9.66]
+  plays (validation cap 2000): pieces=2000 lines=796 tetrises=186
+  [champ-first] bar r20=-1.00
+--- Generation 2 ---
+best=3.69M  mean=2.24M (sd 1.45M)  median=2.49M (worst 152.9k)
+  weights=[16.76, -2.50, -6.77, 3.11, -20.39, -57.48, 45.30, -7.06, -24.09, -2.41, -11.63, -9.07]
+  plays (validation cap 2000): pieces=2000 lines=797 tetrises=188
+  [champ-first] bar r20=9.26
+--- Generation 3 ---
+best=3.73M  mean=1.83M (sd 1.68M)  median=1.50M (worst 159.2k)
+  weights=[15.90, -2.51, -7.22, 3.19, -19.87, -61.08, 45.55, -6.99, -23.70, -2.06, -10.93, -8.64]
+  plays (validation cap 2000): pieces=2000 lines=798 tetrises=168
+  [champ-first] bar r20=-1.00
+--- Generation 4 ---
+best=3.75M  mean=2.45M (sd 1.31M)  median=3.00M (worst 0)
+  weights=[12.36, -2.30, -6.99, 3.20, -20.18, -60.66, 45.44, -7.06, -23.55, -2.57, -11.25, -10.59]
+  plays (validation cap 2000): pieces=2000 lines=793 tetrises=184
+  [champ-first] bar r20=9.34
+--- Generation 5 ---
+best=3.75M  mean=1.50M (sd 1.73M)  median=185.2k (worst 65.0k)
+  weights=[12.36, -2.30, -6.99, 3.20, -20.18, -60.66, 45.44, -7.06, -23.55, -2.57, -11.25, -10.59]
+  plays (validation cap 2000): pieces=2000 lines=793 tetrises=184
+  [champ-first] bar r20=-1.00
+--- Generation 6 ---
+best=3.74M  mean=2.52M (sd 1.26M)  median=2.91M (worst 579.4k)
+  weights=[12.50, -2.26, -12.96, 2.62, -19.75, -53.59, 39.53, -7.03, -24.10, 3.51, -10.27, -3.60]
+  plays (validation cap 2000): pieces=2000 lines=797 tetrises=186
+  [champ-first] bar r20=9.40
+  [stagnant 4 gens -> injecting diversity]
+--- Generation 7 ---
+best=3.76M  mean=492.7k (sd 1.24M)  median=0 (worst 0)
+  weights=[12.50, -2.26, -12.96, 2.62, -19.75, -53.59, 39.53, -7.03, -24.10, 3.51, -10.27, -3.60]
+  plays (validation cap 2000): pieces=2000 lines=797 tetrises=186
+  [champ-first] bar r20=9.28
+--- Generation 8 ---
+best=3.75M  mean=777.9k (sd 1.35M)  median=50 (worst 0)
+  weights=[12.50, -2.26, -12.96, 2.62, -19.75, -53.59, 39.53, -7.03, -24.10, 3.51, -10.27, -3.60]
+  plays (validation cap 2000): pieces=2000 lines=797 tetrises=186
+  [champ-first] bar r20=9.31
+--- Generation 9 ---
+best=3.75M  mean=1.83M (sd 1.45M)  median=2.01M (worst 61.1k)
+  weights=[12.50, -2.26, -12.96, 2.62, -19.75, -53.59, 39.53, -7.03, -24.10, 3.51, -10.27, -3.60]
+  plays (validation cap 2000): pieces=2000 lines=797 tetrises=186
+  [champ-first] bar r20=9.47
+--- Generation 10 ---
+best=3.76M  mean=1.07M (sd 1.55M)  median=187.8k (worst 134.0k)
+  weights=[12.50, -2.26, -12.96, 2.62, -19.75, -53.59, 39.53, -7.03, -24.10, 3.51, -10.27, -3.60]
+  plays (validation cap 2000): pieces=2000 lines=797 tetrises=186
+  [champ-first] bar r20=-1.00
+  [stagnant 4 gens -> injecting diversity]
+
+[hablx8_400k10] champion weights: [12.50, -2.26, -12.96, 2.62, -19.75, -53.59, 39.53, -7.03, -24.10, 3.51, -10.27, -3.60]

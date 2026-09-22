@@ -75,6 +75,5 @@ best=2.95M  mean=465.4k (sd 907.1k)  median=1.9k (worst 0)
   weights=[5.43, -4.81, -59.14, 0.46, -17.69, -27.89, 23.88, -6.27, -0.23, -18.08, -20.95, -4.80]
   plays (validation cap 2000): pieces=2000 lines=797 tetrises=154
   [champ-first] bar r20=7.29
-wrote 15 generations -> C:\Users\Trile\PycharmProjects\meh\v33\out\poslp_blx_400k_gens15.csv
 
 [poslp_blx_400k] champion weights: [5.43, -4.81, -59.14, 0.46, -17.69, -27.89, 23.88, -6.27, -0.23, -18.08, -20.95, -4.80]

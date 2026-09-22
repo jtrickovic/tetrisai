@@ -124,6 +124,5 @@ best=897.1k  mean=226.6k (sd 201.6k)  median=173.8k (worst 109.4k)
   plays (validation cap 2000): pieces=2000 lines=797 tetrises=182
   [champ-first] bar r20=8.96
   [stagnant 4 gens -> injecting diversity]
-wrote 25 generations -> C:\Users\Trile\PycharmProjects\meh\v33\out\v32d1srs_blx_gens25.csv
 
 [v32d1srs_blx] champion weights: [-0.53, -4.68, -8.06, 10.52, -25.77, -32.38, 33.82, -4.51, -18.06, -11.59, -35.32, -4.83]
