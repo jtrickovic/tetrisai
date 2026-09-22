@@ -1,13 +1,9 @@
 import numpy as np
 from numba import njit
 
-from .. import config
 from .metrics import _state_score, _line_points
 from .bfs import get_reachable_locks_numba
 from .burn import burn_and_clear_numba
-
-BEAM_WIDTH = config.BEAM_WIDTH
-CHAIN_BONUS = config.CHAIN_BONUS
 
 
 @njit(cache=True, nogil=True)
@@ -29,8 +25,9 @@ def _beam_keep_top(cand_score, cand_n, B,
 
 
 @njit(cache=True, nogil=True)
-def evaluate_beam_numba(grid, p1_locks, piece_ids, weights, penalty, incoming_prev_clear):
-    B = BEAM_WIDTH
+def evaluate_beam_numba(grid, p1_locks, piece_ids, weights, penalty,
+                        incoming_prev_clear, beam_width, chain_bonus, knee):
+    B = beam_width
     MAX_LOCKS = 64
     MAX_CAND = B * MAX_LOCKS
     w = weights
@@ -61,8 +58,8 @@ def evaluate_beam_numba(grid, p1_locks, piece_ids, weights, penalty, incoming_pr
         g, lines, lh, wf = burn_and_clear_numba(grid, p1_id, lx, ly, lrot)
         lp = _line_points(lines, penalty)
         if lines == 4 and incoming_prev_clear == 4:
-            lp += CHAIN_BONUS
-        sc = _state_score(g, lp, lh, wf, w)
+            lp += chain_bonus
+        sc = _state_score(g, lp, lh, wf, w, knee)
         c = cand_n
         cand_grid[c] = g
         cand_meta[c, 0] = lines
@@ -99,8 +96,8 @@ def evaluate_beam_numba(grid, p1_locks, piece_ids, weights, penalty, incoming_pr
                 g, lines, lh, wf = burn_and_clear_numba(beam_grid[s], pid, lx, ly, lrot)
                 lp = beam_acc[s] + _line_points(lines, penalty)
                 if lines == 4 and beam_prev[s] == 4:
-                    lp += CHAIN_BONUS
-                sc = _state_score(g, lp, lh, wf, w)
+                    lp += chain_bonus
+                sc = _state_score(g, lp, lh, wf, w, knee)
                 c = cand_n
                 cand_grid[c] = g
                 cand_meta[c, 0] = beam_meta[s, 0]
@@ -145,8 +142,9 @@ def _beam_keep_top_hold(cand_score, cand_n, B,
 
 @njit(cache=True, nogil=True)
 def evaluate_beam_hold_numba(grid, p1_locks, piece_ids, weights, penalty,
-                             incoming_prev_clear, post_hold):
-    B = BEAM_WIDTH
+                             incoming_prev_clear, post_hold,
+                             beam_width, chain_bonus, knee):
+    B = beam_width
     MAX_LOCKS = 64
     MAX_CAND = 2 * B * MAX_LOCKS
     w = weights
@@ -177,8 +175,8 @@ def evaluate_beam_hold_numba(grid, p1_locks, piece_ids, weights, penalty,
         g, lines, lh, wf = burn_and_clear_numba(grid, p1_id, lx, ly, lrot)
         lp = _line_points(lines, penalty)
         if lines == 4 and incoming_prev_clear == 4:
-            lp += CHAIN_BONUS
-        sc = _state_score(g, lp, lh, wf, w)
+            lp += chain_bonus
+        sc = _state_score(g, lp, lh, wf, w, knee)
         c = cand_n
         cand_grid[c] = g
         cand_meta[c, 0] = lines
@@ -218,8 +216,8 @@ def evaluate_beam_hold_numba(grid, p1_locks, piece_ids, weights, penalty,
                 g, lines, lh, wf = burn_and_clear_numba(beam_grid[s], pid, lx, ly, lrot)
                 lp = beam_acc[s] + _line_points(lines, penalty)
                 if lines == 4 and beam_prev[s] == 4:
-                    lp += CHAIN_BONUS
-                sc = _state_score(g, lp, lh, wf, w)
+                    lp += chain_bonus
+                sc = _state_score(g, lp, lh, wf, w, knee)
                 c = cand_n
                 cand_grid[c] = g
                 cand_meta[c, 0] = beam_meta[s, 0]
@@ -247,8 +245,8 @@ def evaluate_beam_hold_numba(grid, p1_locks, piece_ids, weights, penalty,
                     g, lines, lh, wf = burn_and_clear_numba(beam_grid[s], hold_s, lx, ly, lrot)
                     lp = beam_acc[s] + _line_points(lines, penalty)
                     if lines == 4 and beam_prev[s] == 4:
-                        lp += CHAIN_BONUS
-                    sc = _state_score(g, lp, lh, wf, w)
+                        lp += chain_bonus
+                    sc = _state_score(g, lp, lh, wf, w, knee)
                     c = cand_n
                     cand_grid[c] = g
                     cand_meta[c, 0] = beam_meta[s, 0]

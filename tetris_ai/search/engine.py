@@ -63,7 +63,8 @@ def _play_holdaware(genome, max_pieces=1000, seed=0):
             curr_pieces = np.array([p1_id] + upcoming[:config.LOOKAHEAD_PLY - 1], dtype=np.int32)
             best_score_curr, best_grid_curr, best_lines_curr, *_ = evaluate_beam_hold_numba(
                 board.grid, locks_curr, curr_pieces, genome.weights, config.NON_TETRIS_PENALTY,
-                last_clear_lines, ph)
+                last_clear_lines, ph,
+                config.BEAM_WIDTH, config.CHAIN_BONUS, config.HEIGHT_KNEE)
 
         best_score_hold = -float('inf')
         best_grid_hold = None
@@ -79,7 +80,8 @@ def _play_holdaware(genome, max_pieces=1000, seed=0):
             if len(locks_hold) > 0:
                 best_score_hold, best_grid_hold, best_lines_hold, *_ = evaluate_beam_hold_numba(
                     board.grid, locks_hold, hold_pieces, genome.weights, config.NON_TETRIS_PENALTY,
-                    last_clear_lines, p1_id)
+                    last_clear_lines, p1_id,
+                    config.BEAM_WIDTH, config.CHAIN_BONUS, config.HEIGHT_KNEE)
 
         if best_score_curr > best_score_hold and best_score_curr != -float('inf'):
             best_grid = best_grid_curr
@@ -184,7 +186,8 @@ def _play_holdblind(genome, max_pieces=1000, seed=0):
             curr_pieces = np.array([p1_id] + upcoming[:config.LOOKAHEAD_PLY - 1], dtype=np.int32)
             best_score_curr, best_grid_curr, best_lines_curr, *_ = evaluate_beam_numba(
                 board.grid, locks_curr, curr_pieces, genome.weights, config.NON_TETRIS_PENALTY,
-                last_clear_lines)
+                last_clear_lines,
+                config.BEAM_WIDTH, config.CHAIN_BONUS, config.HEIGHT_KNEE)
 
         best_score_hold = -float('inf')
         best_grid_hold = None
@@ -200,7 +203,8 @@ def _play_holdblind(genome, max_pieces=1000, seed=0):
             if len(locks_hold) > 0:
                 best_score_hold, best_grid_hold, best_lines_hold, *_ = evaluate_beam_numba(
                     board.grid, locks_hold, hold_pieces, genome.weights, config.NON_TETRIS_PENALTY,
-                    last_clear_lines)
+                    last_clear_lines,
+                    config.BEAM_WIDTH, config.CHAIN_BONUS, config.HEIGHT_KNEE)
 
         if best_score_curr > best_score_hold and best_score_curr != -float('inf'):
             best_grid = best_grid_curr

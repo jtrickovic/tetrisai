@@ -1,12 +1,8 @@
 from numba import njit
 
-from .. import config
-
-HEIGHT_KNEE = config.HEIGHT_KNEE
-
 
 @njit(cache=True, nogil=True)
-def get_board_metrics_numba(grid):
+def get_board_metrics_numba(grid, knee):
     holes = 0
     agg_height = 0
     max_height = 0
@@ -68,7 +64,7 @@ def get_board_metrics_numba(grid):
     if col9_depth > 8:
         col9_depth = 8
 
-    height_excess = max(0, max_height - HEIGHT_KNEE)
+    height_excess = max(0, max_height - knee)
 
     deep_well = max(0, col9_depth - 4)
 
@@ -90,8 +86,8 @@ def _line_points(n, penalty):
 
 
 @njit(cache=True, nogil=True, inline='always')
-def _state_score(grid, lp, landing_height, well_foul, w):
-    m = get_board_metrics_numba(grid)
+def _state_score(grid, lp, landing_height, well_foul, w, knee):
+    m = get_board_metrics_numba(grid, knee)
     return (w[0] * lp +
             w[1] * m[0] +
             w[2] * m[1] +

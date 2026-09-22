@@ -12,13 +12,22 @@ from .tetris_base.tables import (ALL_SHAPE_OFFSETS, ID_TO_PIECE, KICK_TABLE_I,
                                  KICK_TABLE_JLSTZ, PIECE_TO_ID, SHAPE_OFFSETS)
 
 
-DEFAULT_CHAMPION = [2.647786, 0.148468, -10.239377, 2.900157, -4.703681,
-                    -0.115185, 1.030894, -4.747972, -2.276079, -9.759769,
-                    -16.621865, -1.402996]
+# Archived paper champions (runs/ archive): name -> 12 weights.
+# Full story per run: runs/README.md. Final champion = hablx8_gen50
+# (9.40 tet/100, battery 11/12 @ 9.39 hold-aware, 12/12 @ 9.32 hold-blind).
+CHAMPIONS = {
+    'uniform_gen25':   [3.71, -4.82, -17.82, 0.18, -17.88, -28.85, 38.06, -5.68, 0.03, -16.88, -12.58, -6.89],
+    'blx_gen20':       [-0.53, -4.68, -8.06, 10.52, -25.77, -32.38, 33.82, -4.51, -18.06, -11.59, -35.32, -4.83],
+    'blx400k_gen11':   [6.08, -4.84, -65.88, 0.15, -20.60, -34.55, 37.61, -5.79, 0.07, -13.32, -17.11, -6.90],
+    'hablx_gen25':     [15.42, -8.78, -13.69, 0.15, -42.40, -44.11, 65.05, -6.46, -23.80, -2.10, -3.18, -6.54],
+    'hablxcont_gen40': [25.19, -1.28, -10.31, 2.39, -25.51, -46.81, 51.80, -5.92, -26.73, -2.37, -7.60, -10.30],
+    'hablx8_gen50':    [12.50, -2.26, -12.96, 2.62, -19.75, -53.59, 39.53, -7.03, -24.10, 3.51, -10.27, -3.60],
+}
+DEFAULT_CHAMPION = CHAMPIONS['hablx8_gen50']
 
 
 def stress_test_champion(weights, num_games=5, survival_goal=100000):
-    """Play `num_games` with `weights`; 100k pieces is essentially infinite."""
+
     genome = Genome(weights)
     print("--- STRESS TESTING CHAMPION ---")
     print(f"Weights: {weights}")
@@ -150,9 +159,9 @@ def play_game_visual(genome):
         if len(locks_curr) > 0:
             curr_pieces = np.array([p1_id] + upcoming[:config.LOOKAHEAD_PLY - 1], dtype=np.int32)
             if config.ENGINE_MODE == 'hold_aware':
-                res = evaluate_beam_hold_numba(board.grid, locks_curr, curr_pieces, genome.weights, config.NON_TETRIS_PENALTY, last_clear, ph)
+                res = evaluate_beam_hold_numba(board.grid, locks_curr, curr_pieces, genome.weights, config.NON_TETRIS_PENALTY, last_clear, ph, config.BEAM_WIDTH, config.CHAIN_BONUS, config.HEIGHT_KNEE)
             else:
-                res = evaluate_beam_numba(board.grid, locks_curr, curr_pieces, genome.weights, config.NON_TETRIS_PENALTY, last_clear)
+                res = evaluate_beam_numba(board.grid, locks_curr, curr_pieces, genome.weights, config.NON_TETRIS_PENALTY, last_clear, config.BEAM_WIDTH, config.CHAIN_BONUS, config.HEIGHT_KNEE)
             best_score_curr = res[0]
             best_lock_curr = (res[3], res[4], res[5])
 
@@ -169,9 +178,9 @@ def play_game_visual(genome):
             locks_hold = get_reachable_locks_numba(board.grid, hold_played_id, 3, 0, 0)
             if len(locks_hold) > 0:
                 if config.ENGINE_MODE == 'hold_aware':
-                    res = evaluate_beam_hold_numba(board.grid, locks_hold, hold_pieces, genome.weights, config.NON_TETRIS_PENALTY, last_clear, p1_id)
+                    res = evaluate_beam_hold_numba(board.grid, locks_hold, hold_pieces, genome.weights, config.NON_TETRIS_PENALTY, last_clear, p1_id, config.BEAM_WIDTH, config.CHAIN_BONUS, config.HEIGHT_KNEE)
                 else:
-                    res = evaluate_beam_numba(board.grid, locks_hold, hold_pieces, genome.weights, config.NON_TETRIS_PENALTY, last_clear)
+                    res = evaluate_beam_numba(board.grid, locks_hold, hold_pieces, genome.weights, config.NON_TETRIS_PENALTY, last_clear, config.BEAM_WIDTH, config.CHAIN_BONUS, config.HEIGHT_KNEE)
                 best_score_hold = res[0]
                 best_lock_hold = (res[3], res[4], res[5])
 
